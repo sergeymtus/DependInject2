@@ -21,6 +21,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AppActivity : AppCompatActivity(R.layout.activity_app) {
     @Inject
+    lateinit var firebaseMessaging: FirebaseMessaging
+    lateinit var googleApiAvailability: GoogleApiAvailability
     lateinit var auth: AppAuth
     private val viewModel: AuthViewModel by viewModels()
 
@@ -51,7 +53,16 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
             invalidateOptionsMenu()
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            if (!task.isSuccessful) {
+//                println("some stuff happened: ${task.exception}")
+//                return@addOnCompleteListener
+//            }
+//
+//            val token = task.result
+//            println(token)
+//        }
+        firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -96,7 +107,7 @@ class AppActivity : AppCompatActivity(R.layout.activity_app) {
     }
 
     private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+        with(googleApiAvailability) {
             val code = isGooglePlayServicesAvailable(this@AppActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with
